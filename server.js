@@ -6,10 +6,25 @@ var fs = require('fs');
 var express = require('express');
 var app = express();
 
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }))
+
 app.get('/twilio-handler', function (req, res) {
   console.log(req);
   
-  res.send('<Response><Sms>Hello from Express.</Sms></Response>');
+  var message = {
+    'from': req.body.From || 'from_not_sent',
+    'to': req.body.To || 'to_not_present',
+    'body': req.body.Body || 'body_not_present'
+  };
+  
+  fs.appendFile(
+    messages_files, 
+    JSON.stringify(message, null, 2) + endOfLine, 
+    function (err) {
+      res.send('<Response><Sms>Hello from Express.</Sms></Response>');  
+  });
+  
 });
 
 app.get('/messages', function (req, res) {
