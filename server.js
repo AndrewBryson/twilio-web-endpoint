@@ -6,17 +6,14 @@ var fs = require('fs');
 var express = require('express');
 var app = express();
 
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }))
-
 app.get('/twilio-handler', function (req, res) {
   console.log(req);
   
   var message = {
     'datetime': new Date(),
-    'from': req.body.From || 'from_not_sent',
-    'to': req.body.To || 'to_not_present',
-    'body': req.body.Body || 'body_not_present'
+    'from': req.query.From || 'from_not_sent',
+    'to': req.query.To || 'to_not_present',
+    'body': req.query.Body || 'body_not_present'
   };
   
   fs.appendFile(
@@ -33,6 +30,11 @@ app.get('/messages', function (req, res) {
   
   res.type('text/plain');
   res.sendFile(__dirname + '/' + messages_files);
+});
+
+app.get('/messages/purge', function (req, res) {
+  fs.unlinkSync(messages_files);
+  res.send('Deleted');
 });
 
 var server = app.listen(web_port, function () {
