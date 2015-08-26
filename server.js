@@ -13,6 +13,7 @@ app.get('/twilio-handler', function (req, res) {
   console.log(req);
   
   var message = {
+    'datetime': new Date(),
     'from': req.body.From || 'from_not_sent',
     'to': req.body.To || 'to_not_present',
     'body': req.body.Body || 'body_not_present'
@@ -28,7 +29,10 @@ app.get('/twilio-handler', function (req, res) {
 });
 
 app.get('/messages', function (req, res) {
-  res.download(messages_files);
+  res.setHeader('Content-Type', 'text/plain');
+  
+  res.type('text/plain');
+  res.sendFile(__dirname + '/' + messages_files);
 });
 
 var server = app.listen(web_port, function () {
